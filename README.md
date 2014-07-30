@@ -1,7 +1,7 @@
 adapt-animate
 =============
 
-On events at elements(set1), add or remove classes/attributes/content to elements(set2) on selected pages/articles/blocks/components.
+On events at elements(onSelector), add or remove classes/attributes/content(alterationSelector) to elements(toSelector) on selected pages/articles/blocks/components.
 
 ###Usage
   
@@ -24,11 +24,6 @@ To go in components.json
     "_animations": [
       {
         "_id": "accordion-fadeIn-shake-items",
-        "_components": [
-          {
-            "_component": "accordion"
-          }
-        ],
         "_events": {
           "!inview>timeout(500) .component-widget": [
             "+ .animated.fadeIn.duration-4 .component-widget",
