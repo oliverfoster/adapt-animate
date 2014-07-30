@@ -1,11 +1,16 @@
 adapt-animate
 =============
 
-Events to classes on pages/articles/blocks/components (using jquery and emmet style css selectors)
+On events at elements(set1), add or remove classes/attributes/content to elements(set2) on selected pages/articles/blocks/components.
 
 ###Usage
   
-To go in contentObjects.json/articles.json/blocks.json/components.json
+To go in: 
+  
+  contentObjects.json  
+  articles.json  
+  blocks.json  
+  components.json  
   
 ###Example - Accordion fadeIn and shake items
   
@@ -34,7 +39,7 @@ To go in contentObjects.json/articles.json/blocks.json/components.json
 }
 ```
 
-#Included CSS3 Animation Classes - https://github.com/daneden/animate.css
+###Included CSS3 Animation Classes (from https://github.com/daneden/animate.css)
 
 ```
   .animated
@@ -105,7 +110,39 @@ To go in contentObjects.json/articles.json/blocks.json/components.json
   .zoomOutRight
   .zoomOutUp
 ```  
+
+###Formation
   
+"events onSelector": "[action] alterationSelector [onSelector]"  
+    
+####events:  
+    
+[mode]eventName[>[mode]eventName][>[mode]eventName]....  
+
+Can chain events together (see examples)
+    
+#####>mode:  
+       
+! = use $.one instead of $on to attach event  
+    
+#####>eventName:
+        
+click, mouseover, mouseup, keypress, keyup etc... - name of standard jQuery event  
+
+inview, outview, timeout(milliseconds), interval(milliseconds) - additionally  
+        
+####onSelector:  
+    
+[']contextExpressionJQuerySelector[']  
+    
+####action:  
+    
+[manipulation][([order][intervalExpression])]  
+    
+####alterationSelector:  
+    
+[']contextExpressionEmmetSelector[']  
+    
  
   
 ###External Libraries
