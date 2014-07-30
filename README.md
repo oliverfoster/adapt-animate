@@ -34,8 +34,8 @@ To go in components.json
             "+ .animated.fadeIn.duration-4 .component-widget",
             "+(>$i*250) .animated.infinite.shake.duration-4 '.component-item a.comoponent-item-title'"
           ]
-        ]
-    
+        }
+      }
     ]
   }
 }
@@ -69,8 +69,8 @@ To go in course.json
             "+ .animated.fadeIn.duration-4 .component-widget",
             "+(>$i*250) .animated.infinite.shake.duration-4 '.component-item a.comoponent-item-title'"
           ]
-        ]
-    
+        }
+      }
     ]
   }
 }
@@ -154,23 +154,31 @@ To go in course.json
 "events onSelector": "[action] alterationSelector [toSelector]"  
     
 ####1 . events  
-    
+
+Description: Specifies the events to be applied to the toSelector elements  
+
 [mode]eventName[>[mode]eventName][>[mode]eventName]....  
 
 Can chain events together (see examples)
     
 ###### mode  
+
+Description: Specifies whether to call the event once or repeatedly  
        
 ! = use $.one instead of $on to attach event  
     
 ###### eventName
+
+Description: Specifies the event name to be applied and occasionally some event parameters  
         
 click, mouseover, mouseup, keypress, keyup etc... - name of standard jQuery events  
 
 inview, outview, timeout(milliseconds), interval(milliseconds) - additionally  
         
 #### 2. onSelector/toSelector 
-    
+
+Description: Selects elements to attach event on or to apply alterations to  
+
 [']jQuerySelector[']  
     
 Example:  
@@ -180,24 +188,29 @@ Example:
 See [jquery selectors](http://api.jquery.com/category/selectors/)  
     
 #### 3. action  
+
+Description: Specifies the actions to be taken on the event call  
     
 [manipulation][([order][intervalExpression])]  
 
 ###### manipulation
+
+Description: Specifies whether to add or remove the alterations  
 
   \+ = add alterationSelector to toSelector  
   \- = remove alterationSelector from toSelector  
   
 ###### order
 
+Description: Specifies the order at which the alterations are to be made on the elements from toSelector, top-to-bottom or bottom-to-top  
+
   \> = add interval descending  
   \< = add interval ascending  
   
 ###### intervalExpression
 
-This expression is contextSubstituted before it is evaluated  (see below)  
-
-Adds/removes alterationSelector to toSelector elements after specified interval  
+Description: Adds/removes alterationSelector to toSelector elements after specified interval  
+Note: This expression is contextSubstituted before it is evaluated  (see below)  
 
 Examples:  
   
@@ -208,7 +221,8 @@ $i*250 = 0 for item 1, (250 for item 2, 500 for item 3 etc...
 
 #### 4. alterationSelector
 
-This expression is contextSubstituted before it is evaluated  (see below)  
+Description: Specifies classes/attributes/content to change in toSelector elements  
+Note: This expression is contextSubstituted before it is evaluated  (see below)  
     
 [']contextSubsitutedEmmetSelector[']  
 
@@ -220,6 +234,8 @@ See [emmet.io cheat sheet](http://docs.emmet.io/cheat-sheet/)
 
 
 #### 5. contextSubsituted
+
+Description: Allows intervalExpression and alterationSelector to use a few contextual variables  
 
 $i = replaced by item index  
 $ni = replaced by natural item index  
