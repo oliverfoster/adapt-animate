@@ -3,19 +3,14 @@ adapt-animate
 
 Events to classes on pages/articles/blocks/components (using jquery and emmet style css selectors)
 
-#Uses
-  
-  https://github.com/daneden/animate.css
-  https://github.com/emmetio/textarea
-  
-#Usage
+###Usage
   
 To go in contentObjects.json/articles.json/blocks.json/components.json
   
-#Example - Accordion fadeIn and shake items
+###Example - Accordion fadeIn and shake items
   
-500 milliseconds after first inview, fade in accordion for 1 second and start shaking each item infinitely, in-tern, decending, at intervals of 250 milliseconds after each other.
-'''
+500 milliseconds after first inview > fade in accordion for 1 second and start shaking each item for 1 second, infinitely, in-turn, decending at intervals of 250 milliseconds.
+```
 {
   "_animate": {
     "_isEnabled": true,
@@ -29,18 +24,19 @@ To go in contentObjects.json/articles.json/blocks.json/components.json
         ],
         "_events": {
           "!inview>timeout(500) .component-widget": [
-            "+(>$i*250) .animated.infinite.shake.duration-4 '.component-item a.comoponent-item-title'",
-            "+ .animated.fadeIn.duration-4 .component-widget"
+            "+ .animated.fadeIn.duration-4 .component-widget",
+            "+(>$i*250) .animated.infinite.shake.duration-4 '.component-item a.comoponent-item-title'"
           ]
         ]
     
     ]
   }
 }
-'''
+```
 
 #Included CSS3 Animation Classes - https://github.com/daneden/animate.css
-  
+
+```
   .animated
   .animated.infinite
   .animated.hinge
@@ -108,10 +104,12 @@ To go in contentObjects.json/articles.json/blocks.json/components.json
   .zoomOutLeft
   .zoomOutRight
   .zoomOutUp
-  
+```  
   
  
-
-
-
-On Component
+  
+###External Libraries
+  
+  https://github.com/daneden/animate.css  
+  https://github.com/emmetio/textarea  
+  
