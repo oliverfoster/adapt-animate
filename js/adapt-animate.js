@@ -241,6 +241,8 @@ define(function(require) {
 					if (back) {
 						eventsOn.index = parseInt(eventsOn.events[eventsOn.index + 1].name) - 1;
 						animate.attach.create(eventsOn, actionsOn);
+					} else {
+						eventsOn.index = -1;
 					}
 				}
 			},
