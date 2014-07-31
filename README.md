@@ -250,10 +250,10 @@ See [emmet.io cheat sheet](http://docs.emmet.io/cheat-sheet/)
 
 Description: Allows intervalExpression and alterationSelector to use a few contextual variables  
 
-$i = item index  
+$i = item order index  
 $ni = natural item index  
 $x = fired count  
-$px = last fired count (fired count - 1)  
+$lx = last fired count (fired count - 1)  
 $t = item top window offset  
 $r = item right window offset  
 $b = item bottom window offset  
