@@ -43,28 +43,33 @@ define(function(require) {
 			var modelJSON = model.toJSON();
 			var modelAnimate = model.get("_animate");
 
-			if (modelAnimate._animations !== undefined) {
-				var redo = {};
-				var id = 1;
-				_.each(modelAnimate._animations, function(item) {
-					if (item._id == undefined) item._id = "lan-" + (id++);
-					redo[item._id] = item;
-				});
-				modelAnimate._animations = redo;
-			}
+			if (modelAnimate._merged === undefined) {
 
-			_.each(config._animations, function(item) {
-				if (item["_"+elementType] === undefined) return;
-				_.each(item["_"+elementType], function(element) {
-					var answer = _.findWhere([modelJSON], element);
-					if (answer !== undefined) {
-						if (modelAnimate._animations === undefined) modelAnimate._animations = {};
-						if (modelAnimate._animations[item._id] !== undefined) return;
-						modelAnimate._animations[item._id] = item;
-						return;
-					}
+				if (modelAnimate._animations !== undefined) {
+					var redo = {};
+					var id = 1;
+					_.each(modelAnimate._animations, function(item) {
+						if (item._id == undefined) item._id = "lan-" + (id++);
+						redo[item._id] = item;
+					});
+					modelAnimate._animations = redo;
+				}
+
+				_.each(config._animations, function(item) {
+					if (item["_"+elementType] === undefined) return;
+					_.each(item["_"+elementType], function(element) {
+						var answer = _.findWhere([modelJSON], element);
+						if (answer !== undefined) {
+							if (modelAnimate._animations === undefined) modelAnimate._animations = {};
+							if (modelAnimate._animations[item._id] !== undefined) return;
+							modelAnimate._animations[item._id] = item;
+							return;
+						}
+					});
 				});
-			});
+
+				modelAnimate._merged = true;
+			}
 		},
 		attach: {
 			initialize: function(model, view) {
