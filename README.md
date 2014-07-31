@@ -174,6 +174,14 @@ Note: You may use your own styles!
   .zoomOutLeft
   .zoomOutRight
   .zoomOutUp
+  
+  For control there are also:  
+  
+  .dur-1  > .dur-20   animation duration @250 millisecond intervals (250 > 5000)  
+  .del-1  > .del-20   animation delay @250 millisecond intervals (250 > 5000)  
+  .times-1  > .times-20   animation iterations 1-20 times  
+  .times-infinite  
+
 ```  
 
 ### Formation
