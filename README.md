@@ -30,7 +30,7 @@ To go in components.json
           }
         ],
         "_events": {
-          "!inview>timeout(500) .component-widget": [
+          "1inview>timeout(500) .component-widget": [
             "+ .animated.fadeIn.duration-4 .component-widget",
             "+(>$i*250) .animated.infinite.shake.duration-4 '.component-item a.comoponent-item-title'"
           ]
@@ -65,7 +65,7 @@ To go in course.json
           }
         ],
         "_events": {
-          "!inview>timeout(500) .component-widget": [
+          "1inview>timeout(500) .component-widget": [
             "+ .animated.fadeIn.duration-4 .component-widget",
             "+(>$i*250) .animated.infinite.shake.duration-4 '.component-item a.comoponent-item-title'"
           ]
@@ -250,10 +250,18 @@ See [emmet.io cheat sheet](http://docs.emmet.io/cheat-sheet/)
 
 Description: Allows intervalExpression and alterationSelector to use a few contextual variables  
 
-$i = replaced by item index  
-$ni = replaced by natural item index  
-$x = replaced by event fired count  
-$px = replaced by last event fired count  
+$i = item index  
+$ni = natural item index  
+$x = fired count  
+$px = last fired count (fired count - 1)  
+$t = item top window offset  
+$r = item right window offset  
+$b = item bottom window offset  
+$l = item left window offset  
+$t% = item top window offset percentage  
+$r% = item right window offset percentage  
+$b% = item bottom window offset percentage  
+$l% = item left window offset percentage  
 
 
 
