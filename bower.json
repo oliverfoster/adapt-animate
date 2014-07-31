@@ -1,0 +1,14 @@
+{
+  "name": "adapt-animate",
+  "homepage": "https://github.com/cgkineo/adapt-animate",
+  "authors": [
+    "Oliver Foster <oliver.foster@kineo.com"
+  ],
+  "description": "%description",
+  "main": "/js/adapt-animate.js",
+  "keywords": [
+    "adapt-plugin",
+    "adapt-extension"
+  ],
+  "license": "GPLv3"
+}
