@@ -76,7 +76,32 @@ To go in course.json
 }
 ```
 
-
+###Example - ClickStyle
+  
+On elements with class 'clickstyle' on each click change to 'clickstyle-1', 'clickstyle-2' etc...  
+  
+```
+ {
+    "_id": "clickstyle",
+    "_events": {
+        "!click .clickstyle" : [
+            "+ .clickstyle-$x[data-clickstyle='$x'] .clickstyle",
+            "- .clickstyle .clickstyle"
+        ],
+        "!click [data-clickstyle]" : [
+            "- .clickstyle-$x [data-clickstyle]",
+            "+ .clickstyle-$nx[data-clickstyle='$nx'] [data-clickstyle]"
+        ]
+    },
+    "_contentObjects": [
+        {
+            "_type": "page"
+        }
+    ]
+}
+```
+  
+  
 ###Included CSS3 Animation Classes (from https://github.com/daneden/animate.css)
   
 Note: You may use your own styles!
