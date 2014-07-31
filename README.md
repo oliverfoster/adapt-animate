@@ -284,11 +284,14 @@ $t = item top window offset
 $r = item right window offset  
 $b = item bottom window offset  
 $l = item left window offset  
-$t% = item top window offset percentage  
-$r% = item right window offset percentage  
-$b% = item bottom window offset percentage  
-$l% = item left window offset percentage  
-
+$t% = item top window offset percentage 0-100  
+$r% = item right window offset percentage 0-100  
+$b% = item bottom window offset percentage 0-100  
+$l% = item left window offset percentage 0-100  
+$t%d = item top window offset percentage decimal .0-1  
+$r%d = item right window offset percentage decimal .0-1  
+$b%d = item bottom window offset percentage decimal .0-1  
+$l%d = item left window offset percentage decimal .0-1  
 
 
 ###External Libraries
