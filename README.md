@@ -24,6 +24,11 @@ To go in components.json
     "_animations": [
       {
         "_id": "accordion-fadeIn-shake-items",
+        "_components": [
+          {
+            "_component": "accordion"
+          }
+        ],
         "_events": {
           "!inview>timeout(500) .component-widget": [
             "+ .animated.fadeIn.duration-4 .component-widget",
@@ -73,7 +78,9 @@ To go in course.json
 
 
 ###Included CSS3 Animation Classes (from https://github.com/daneden/animate.css)
-
+  
+Note: You may use your own styles!
+  
 ```
   .animated
   .animated.infinite
@@ -155,12 +162,15 @@ Description: Specifies the events to be applied to the toSelector elements
 [mode]eventName[>[mode]eventName][>[mode]eventName]....  
 
 Can chain events together (see examples)
+
+At the end of the event chain it is possible to loop round (see eventName for details)
     
 ###### mode  
 
 Description: Specifies whether to call the event once or repeatedly  
        
-! = use $.one instead of $on to attach event  
+1 = use $.one instead of $on to attach event  
+! = use $.live instead of $on to attach event  
     
 ###### eventName
 
@@ -169,6 +179,14 @@ Description: Specifies the event name to be applied and occasionally some event 
 click, mouseover, mouseup, keypress, keyup etc... - name of standard jQuery events  
 
 inview, outview, timeout(milliseconds), interval(milliseconds) - additionally  
+  
+Chain Loop: 
+
+An event name beginning with < will reapply the event at the index specified.  
+
+1inview>1interval(500)><0  
+
+Will activate on first inview after 500 milliseconds then reapply 1inview  
         
 #### 2. onSelector/toSelector 
 
@@ -178,7 +196,7 @@ Description: Selects elements to attach event on or to apply alterations to
     
 Example:  
     
-\#id.className = selects elements with id="id" class="className"  
+\#id.className = selects elements with id="id" and class="className"  
 
 See [jquery selectors](http://api.jquery.com/category/selectors/)  
     
