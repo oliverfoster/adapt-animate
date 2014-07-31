@@ -1,0 +1,42 @@
+//see readme
+//contentObject.json, article.json, block.json or component.json
+{
+  "_animate": {
+    "_isEnabled": true,
+    "_animations": [
+      {
+        "_id": "accordion-fadeIn-shake-items",
+        "_components": [
+          {
+            "_component": "accordion"
+          }
+        ],
+        "_events": {
+          "1inview>timeout(500) .component-widget": [
+            "+ .animated.fadeIn.duration-4 .component-widget",
+            "+(>$i*250) .animated.infinite.shake.duration-4 '.component-item a.comoponent-item-title'"
+          ]
+        }
+      }
+    ]
+  }
+}
+
+ {
+    "_id": "clickstyle",
+    "_events": {
+        "!click .clickstyle" : [
+            "+ .clickstyle-$x[data-clickstyle='$x'] .clickstyle",
+            "- .clickstyle .clickstyle"
+        ],
+        "!click [data-clickstyle]" : [
+            "- .clickstyle-$x [data-clickstyle]",
+            "+ .clickstyle-$nx[data-clickstyle='$nx'] [data-clickstyle]"
+        ]
+    },
+    "_contentObjects": [
+        {
+            "_type": "page"
+        }
+    ]
+}
