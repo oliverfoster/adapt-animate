@@ -16,7 +16,7 @@ To go in:
 
 To go in components.json  
 
-500 milliseconds after first inview > fade in accordion for 1 second and start shaking each item for 1 second, infinitely, in-turn, decending at intervals of 250 milliseconds.
+Description: 500 milliseconds after the first inview event, fade in the accordion for 1 second and start shaking each item for 1 second, infinitely, decending, in-turn, at intervals of 250 milliseconds.
 ```
 {
   "_animate": {
