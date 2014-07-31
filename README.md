@@ -178,7 +178,7 @@ Description: Specifies the event name to be applied and occasionally some event 
         
 click, mouseover, mouseup, keypress, keyup etc... - name of standard jQuery events  
 
-inview, outview, timeout(milliseconds), interval(milliseconds) - additionally  
+inview, outview, scroll, interval(milliseconds) - additionally  
   
 Chain Loop: 
 
