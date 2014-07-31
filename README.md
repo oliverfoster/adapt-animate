@@ -279,6 +279,7 @@ $i = item order index
 $ni = natural item index  
 $x = fired count  
 $lx = last fired count (fired count - 1)  
+$nx = next fired count (fired count + 1)  
 $t = item top window offset  
 $r = item right window offset  
 $b = item bottom window offset  
