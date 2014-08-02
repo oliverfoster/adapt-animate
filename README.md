@@ -30,7 +30,7 @@ Description: 500 milliseconds after the first inview event, fade in the accordio
           }
         ],
         "_events": {
-          "1inview>interval(500) .component-widget": [
+          "1inview>1interval(500) .component-widget": [
             "+ .animated.fadeIn.dur-4 .component-widget",
             "+(>$i*250) .animated.infinite.shake.dur-4 '.component-item a.comoponent-item-title'"
           ]
@@ -65,7 +65,7 @@ To go in course.json
           }
         ],
         "_events": {
-          "1inview>interval(500) .component-widget": [
+          "1inview>1interval(500) .component-widget": [
             "+ .animated.fadeIn.dur-4 .component-widget",
             "+(>$i*250) .animated.infinite.shake.dur-4 '.component-item a.comoponent-item-title'"
           ]
