@@ -205,7 +205,8 @@ At the end of the event chain it is possible to loop round (see eventName for de
 ###### mode  
 
 Description: Specifies whether to call the event once or repeatedly  
-       
+
+     
 1 = use $.one instead of $on to attach event  
 ! = use $.live instead of $on to attach event  
     
@@ -219,15 +220,19 @@ inview(percentageInview), outview, scroll, interval(milliseconds), timeout(milli
 
 Examples:  
 
+```
 "inview('50%')>timeout(500) .className" : ... == when the .className items are at least 50% inview, apply the alterations after 500 milliseconds  
 "inview('50%')>1interval(500) .className" : ... == "inview('50%')>timeout(500) .className"  
 "!click .clickable" : ... == when click on any current or new .clickable item, apply the alterations  
+```
   
 Chain Loop: 
 
 An event name beginning with < will reapply the event at the index specified.  
 
+```
 1inview>1interval(500)><0  
+```
 
 Will activate on first inview after 500 milliseconds then reapply 1inview  
         
@@ -236,10 +241,12 @@ Will activate on first inview after 500 milliseconds then reapply 1inview
 Description: Selects elements to attach event on or to apply alterations to  
 
 [']jQuerySelector[']  
-    
+
 Example:  
-    
+
+```    
 \#id.className = selects elements with id="id" and class="className"  
+```
 
 See [jquery selectors](http://api.jquery.com/category/selectors/)  
     
@@ -270,10 +277,11 @@ Note: This expression is contextSubstituted before it is evaluated  (see below)
 
 Examples:  
   
+```
 500 = 500  
 4*500 = 2000  
 $i*250 = 0 for item 1, (250 for item 2, 500 for item 3 etc...  
-
+```
 
 #### 4. alterationSelector
 
@@ -283,16 +291,18 @@ Note: This expression is contextSubstituted before it is evaluated  (see below)
 [']contextSubsitutedEmmetSelector[']  
 
 See [emmet.io cheat sheet](http://docs.emmet.io/cheat-sheet/)  
-  
+ 
+``` 
 .item-$i = adds/removes classname item-0 for item 1, classname item-1 for item 2, etc...  
 .clicks-$x = adds/remove classname clicks-1 on first click, classname clicks-2 on second click, etc...  
-
+```
 
 
 #### 5. contextSubsituted
 
 Description: Allows intervalExpression and alterationSelector to use a few contextual variables  
 
+```
 $i = item order index  
 $ni = natural item index  
 $e = event fired count  
@@ -326,6 +336,7 @@ $e = is count for fires on single event line
 $x = is count for fires on single event line actions  
 $ge = is count for fires on multiple event lines with the same event definition  
 $gs = is count for fires on multiple event lines with the same selector definition  
+```
 
 ###External Libraries
   
