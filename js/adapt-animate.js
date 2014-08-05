@@ -74,28 +74,47 @@ define(function(require) {
 		attach: {
 			initialize: function(model, view) {
 				var modelAnimate = model.get("_animate");
+				var events = [];
 				_.each(modelAnimate._animations, function(animation, key) {
-					_.each(animation._events, function(actionsOn, eventsOn) {
-						if (typeof actionsOn == "string") actionsOn = [actionsOn];
+					_.each(animation._events, function(actionsOnStrs, eventsOnStr) {
+						if (typeof actionsOnStrs == "string") actionsOnStrs = [actionsOnStrs];
 
-						var eventsOn = animate.eventsOn.parse(eventsOn);
+						var eventsOn = animate.eventsOn.parse(eventsOnStr);
+						eventsOn.orig = actionsOnStrs;
 						eventsOn.parent = view.$el;
 						eventsOn.children = view.$el.find(eventsOn.on);
 						eventsOn.count = 0;
 						eventsOn.index = -1;
-						var actionsOn = animate.actionsOn.parse(actionsOn);
-						_.each(actionsOn, function(actionOn) { actionOn.count = 0; });
+						eventsOn.actionsOn = animate.actionsOn.parse(actionsOnStrs);
 
-						animate.attach.create($.extend(true,{},eventsOn), $.extend(true,{},actionsOn));
+						events.push(eventsOn);
+						
 					});
 				});
+
+				var groupByEvent = _.groupBy(events, function(item) { return item.str; });
+				var groupByOn = _.groupBy(events, function(item) { return item.on; });
+
+				_.each(groupByEvent, function(item, key) {
+					groupByEvent[key] = {
+						count: 0,
+						name: key
+					};
+				});
+
+				_.each(events, function(eventsOn) {
+					var copy = $.extend(true,{},eventsOn);
+					copy.groupByEvent = groupByEvent[eventsOn.str];
+					copy.groupByOn = groupByOn[eventsOn.on];
+					animate.attach.create(copy); //, $.extend(true,{},actionsOn));
+				});
 			},
-			create: function(eventsOn, actionsOn) {
+			create: function(eventsOn) {
 				eventsOn.index++;
 				var eventObj = eventsOn.events[eventsOn.index];
 				var callback = undefined;
 				if (eventObj.callback === undefined) {
-					eventObj.callback = _.bind(animate.attach.run, eventsOn.children, eventsOn, actionsOn);
+					eventObj.callback = _.bind(animate.attach.run, eventsOn.children, eventsOn);
 				}
 				callback = eventObj.callback;
 				var mode = "on";
@@ -115,17 +134,28 @@ define(function(require) {
 					break;
 				case "interval":
 					if (mode == "one") {
-						setTimeout.apply(window, [ callback, eventObj.arguments ] );
+						setTimeout.apply(window, [ function() {
+							callback();
+							eventsOn.index--;
+						}, eventObj.arguments ] );
 						break;
 					}
 					setInterval.apply(window, [ callback, eventObj.arguments ] );
 					break;
+				case "timeout":
+					setTimeout.apply(window, [ function() {
+						callback();
+						eventsOn.index--;
+					}, eventObj.arguments ] );
+					break;
 				case "inview":
 					function inviewCallback(event, isInView, visiblePartX, visiblePartY) {
+						var onScreen = animate.element.getOnScreen($(event.currentTarget));
 						if (!isInView && mode == "one" && eventObj.inview) {
 							eventObj.appliedCount--;
 							delete eventObj.inview;
 							if (eventObj.appliedCount === 0) {
+								eventsOn.index--;
 								eventsOn.children["off"]("inview", inviewCallback);
 							}
 							return;
@@ -135,22 +165,36 @@ define(function(require) {
 							return;
 						}
 						if (isInView && eventObj.inview) return;
+
+						if (eventObj.arguments !== undefined && eventObj.arguments[0] !== undefined) {
+							if (onScreen.inviewP < parseInt(eventObj.arguments[0])) return;
+						}
+
 						eventObj.inview = true;
-						if (isInView) callback();
+						if (isInView) {
+							callback();
+						}
 					}
 					if (live) {
 						if (eventObj.appliedCount === 0) eventsOn.parent["on"]("inview", eventsOn.on, inviewCallback);
 					} else {
-						if (eventObj.appliedCount === 0) eventsOn.children["on"]("inview", inviewCallback);
+						if (eventObj.appliedCount === 0) {
+							eventsOn.children["on"]("inview", inviewCallback);
+						}
 					};
 					eventObj.appliedCount++;
 					break;
 				case "outview":
 					function outviewCallback(event, isInView, visiblePartX, visiblePartY) {
-						if (!isInView) callback();
+						var onScreen = animate.element.getOnScreen($(event.currentTarget));
+
+						if (!isInView) {
+							callback();
+						}
 						if (!isInView && mode == "one") {
 							eventObj.appliedCount--;
 							if (eventObj.appliedCount === 0) {
+								eventsOn.index--;
 								eventsOn.children["off"]("inview", outviewCallback);
 							}
 						}
@@ -166,21 +210,34 @@ define(function(require) {
 					if (live) {
 						if (eventObj.appliedCount === 0) eventsOn.parent[mode](eventObj.name, eventsOn.on, callback );
 					} else {
-						if (eventObj.appliedCount === 0) eventsOn.children[mode](eventObj.name, callback );
+						switch(mode) {
+						case "one":
+							if (eventObj.appliedCount === 0) eventsOn.children[mode](eventObj.name, function() {
+								callback();
+								eventsOn.index--;
+							} );
+							break;
+						case "on":
+							if (eventObj.appliedCount === 0) eventsOn.children[mode](eventObj.name, callback );
+							break;
+						}
+						
 					}
 					break;
 				}
 			},
-			run: function(eventsOn, actionsOn) {
+			run: function(eventsOn) {
 				var back = false;
 				if (eventsOn.index < eventsOn.events.length - 1) {
 					back = (eventsOn.events[eventsOn.index + 1].mode == "<");
 				}
 				if (eventsOn.index < eventsOn.events.length - 1 && !back) {
-					animate.attach.create(eventsOn, actionsOn);
+					animate.attach.create(eventsOn);
 				} else {
 					eventsOn.count++;
-					_.each(actionsOn, function(actionOn) {
+					eventsOn.groupByEvent.count++;
+					eventsOn.groupByOn.count++;
+					_.each(eventsOn.actionsOn, function(actionOn) {
 						eventsOn.children = eventsOn.parent.find(eventsOn.on);
 						var elements = eventsOn.parent.find(actionOn.on);
 						actionOn.count++;
@@ -189,17 +246,10 @@ define(function(require) {
 						for (var i = 0; i < elements.length; i++) {
 							var index = (actionOn.action.direction == "backward" ? (elements.length - 1) - i : i);
 							var $element = $(elements[index]);
-							var top = $element.offset()["top"] - $(window).scrollTop();
-							var left = $element.offset()["left"] - $(window).scrollLeft();
-							var bottom = $(window).height() - top;
-							var right = $(window).width() - left;
-							var topP = (100 /  $(window).height()) * top;
-							var leftP = (100 / $(window).width()) * left;
-							var bottomP = (100 /  $(window).height()) * ($(window).height() - top);
-							var rightP = (100 / $(window).width()) * ($(window).width() - left);
 
+							var onScreen = animate.element.getOnScreen($element);
 							
-							var alt = animate.attach.expandContext(actionOn.alterations, actionOn.count, index, i, top, right, bottom, left, topP, rightP, bottomP, leftP);
+							var alt = animate.attach.expandContext(actionOn.alterations, eventsOn.groupByEvent.count, eventsOn.groupByOn.count, eventsOn.count, actionOn.count, index, i, onScreen);
 							var alterations = $(emmet.expandAbbreviation(alt,"plain"))[0];
 							var attributes = attrs(alterations);
 							var content = undefined;
@@ -207,10 +257,10 @@ define(function(require) {
 							
 							var interval = undefined;
 							if (actionOn.action.interval === undefined) interval = 0;
-							else interval = animate.attach.calculateContext(actionOn.action.interval, actionOn.count, index, i, top, right, bottom, left, topP, rightP, bottomP, leftP);
+							else interval = animate.attach.calculateContext(actionOn.action.interval, eventsOn.groupByEvent.count, eventsOn.groupByOn.count, eventsOn.count, actionOn.count, index, i, onScreen);
 							switch (actionOn.action.type) {
 							case "add":
-								setTimeout( _.bind(function($element, attributes, content) {
+								var callback =  _.bind(function($element, attributes, content) {
 									_.each(attributes, function(value, key) {
 										if (key == "class") {
 											$element.addClass(value);
@@ -219,11 +269,13 @@ define(function(require) {
 										}
 									});
 									$element.html(content);
-								}, window, $element, attributes, content)
-								, interval);
+								}, window, $element, attributes, content);
+								
+								if (interval > 0) setTimeout( callback, interval);
+								else callback();
 								break;
 							case "remove":
-								setTimeout( _.bind(function($element, attributes, content) {
+								var callback = _.bind(function($element, attributes, content) {
 									_.each(attributes, function(value, key) {
 										if (key == "class") {
 											$element.removeClass(value);
@@ -232,44 +284,107 @@ define(function(require) {
 										}
 									});
 									$element.html(content);
-								}, window, $element, attributes, content)
-								, interval);
+								}, window, $element, attributes, content);
+								
+								if (interval > 0) setTimeout( callback, interval);
+								else callback();
 								break;
 							}
 						}
 					});
 					if (back) {
 						eventsOn.index = parseInt(eventsOn.events[eventsOn.index + 1].name) - 1;
-						animate.attach.create(eventsOn, actionsOn);
-					} else {
-						eventsOn.index = -1;
+						animate.attach.create(eventsOn);
 					}
 				}
 			},
-			calculateContext: function(string, x, ni, i, top, right, bottom, left, topP, rightP, bottomP, leftP) {
-				var string = animate.attach.expandContext(string, x, ni, i, top, right, bottom, left, topP, rightP, bottomP, leftP);
+			calculateContext: function(string, ge, gs, e, x, ni, i, onScreen) {
+				var string = animate.attach.expandContext(string, ge, gs, e, x, ni, i, onScreen);
 				string = eval(string);
 				return string;
 			},
-			expandContext: function(string, x, ni, i, top, right, bottom, left, topP, rightP, bottomP, leftP) {
+			expandContext: function(string, ge, gs, e, x, ni, i, onScreen) {
+				string = string.replace(/\$e/g, e);
+				string = string.replace(/\$le/g, e-1);
+				string = string.replace(/\$ne/g, e+1);
+				string = string.replace(/\$ge/g, ge);
+				string = string.replace(/\$lge/g, ge-1);
+				string = string.replace(/\$nge/g, ge+1);
+				string = string.replace(/\$gs/g, gs);
+				string = string.replace(/\$lgs/g, gs-1);
+				string = string.replace(/\$ngs/g, gs+1);
 				string = string.replace(/\$x/g, x);
 				string = string.replace(/\$lx/g, x-1);
 				string = string.replace(/\$nx/g, x+1);
 				string = string.replace(/\$ni/g, ni);
 				string = string.replace(/\$i/g, i);
-				string = string.replace(/\$t%d/g, topP/100);
-				string = string.replace(/\$r%d/g, rightP/100);
-				string = string.replace(/\$b%d/g, bottomP/100);
-				string = string.replace(/\$l%d/g, leftP/100);
-				string = string.replace(/\$t%/g, topP);
-				string = string.replace(/\$r%/g, rightP);
-				string = string.replace(/\$b%/g, bottomP);
-				string = string.replace(/\$l%/g, leftP);
-				string = string.replace(/\$t/g, top);
-				string = string.replace(/\$r/g, right);
-				string = string.replace(/\$b/g, bottom);
-				string = string.replace(/\$l/g, left);
+				string = string.replace(/\$t%d/g, onScreen.topP/100);
+				string = string.replace(/\$r%d/g, onScreen.rightP/100);
+				string = string.replace(/\$b%d/g, onScreen.bottomP/100);
+				string = string.replace(/\$l%d/g, onScreen.leftP/100);
+				string = string.replace(/\$t%/g, onScreen.topP);
+				string = string.replace(/\$r%/g, onScreen.rightP);
+				string = string.replace(/\$b%/g, onScreen.bottomP);
+				string = string.replace(/\$l%/g, onScreen.leftP);
+				string = string.replace(/\$t/g, onScreen.top);
+				string = string.replace(/\$r/g, onScreen.right);
+				string = string.replace(/\$b/g, onScreen.bottom);
+				string = string.replace(/\$l/g, onScreen.left);
+				string = string.replace(/\$iv%/g, onScreen.inviewP);
+				string = string.replace(/\$iv%d/g, onScreen.inviewP/100);
 				return string;
+			}
+		},
+		element: {
+			getOnScreen: function($element) {
+				var height = $element.height();
+				var width = $element.width();
+				var wHeight = $(window).height();
+				var wWidth = $(window).width();
+				
+				//topleft from topleft of window
+				var top = $element.offset()["top"] - $(window).scrollTop();
+				var left = $element.offset()["left"] - $(window).scrollLeft();
+
+				//bottomright from bottomright of window
+				var bottom = wHeight - (top + height);
+				var right = wWidth - (left + width);
+				
+				//percentages of above
+				var topP = Math.round((100 /  wHeight) * top);
+				var leftP = Math.round((100 / wWidth) * left);
+				var bottomP = Math.round((100 /  wHeight) * (wHeight - (top + height)));
+				var rightP = Math.round((100 / wWidth) * (wWidth - (left + width)));
+
+
+				//inview
+				var inviewH = null;
+				if (width > wWidth) width = wWidth;
+				if (left < 0) { //offscreen left
+					inviewH = (width + left);
+				} else if (left + width > wWidth) { //offscreen right
+					inviewH = (wWidth - left);
+				} else { //fully inscreen
+					inviewH = width;
+				}
+
+				var inviewV = null;
+				if (height > wHeight) height = wHeight;
+				if (top < 0) { //offscreen top
+					inviewV = (height + top);
+				} else if (top + height > wHeight) { //offscreen bottom
+					inviewV = (wHeight - top);
+				} else { //fully inscreen
+					inviewV = height;
+				}
+
+				var area = height * width;
+				var inviewArea = inviewV * inviewH;
+
+				var inviewP = Math.round((100 / area) * inviewArea);
+
+
+				return { top: top, left: left, bottom: bottom, right: right, topP: topP, leftP:leftP, bottomP: bottomP, rightP: rightP, inviewP:inviewP };
 			}
 		},
 		event: {
@@ -305,6 +420,7 @@ define(function(require) {
 				var parts = eventsOn.split(" ");
 				if (parts.length < 2) throw eventsOn + " does not have both an event and a selector";
 				var events = animate.eventsOn.parseEvents(parts[0]);
+				events.str = parts[0];
 				events.on = animate.eventsOn.parseOn(parts[1]);
 				return events;
 			},
@@ -346,7 +462,7 @@ define(function(require) {
 					var action = animate.actionsOn.parseAction(parts[0]);
 					var alterations = animate.actionsOn.parseAlterations(parts[1]);
 					var on = animate.actionsOn.parseOn(parts[2]);
-					redo.push( { action: action, alterations: alterations, on: on } );
+					redo.push( { action: action, alterations: alterations, on: on, count: 0 } );
 					return;
 				});
 				return redo;

@@ -30,9 +30,11 @@ Description: 500 milliseconds after the first inview event, fade in the accordio
           }
         ],
         "_events": {
-          "1inview>1interval(500) .component-widget": [
-            "+ .animated.fadeIn.dur-4 .component-widget",
-            "+(>$i*250) .animated.infinite.shake.dur-4 '.component-item a.comoponent-item-title'"
+          "inview>timeout(500) .component-widget": [
+            "- .fadeIn.dur-4 .component-widget",
+            "+ .fadeIn.dur-4 .component-widget",
+            "- .times-infinite.shake.dur-4 '.accordion-item a.accordion-item-title'",
+            "+(>$i*250) .times-infinite.shake.dur-4 '.accordion-item a.accordion-item-title'"
           ]
         }
       }
@@ -65,9 +67,11 @@ To go in course.json
           }
         ],
         "_events": {
-          "1inview>1interval(500) .component-widget": [
-            "+ .animated.fadeIn.dur-4 .component-widget",
-            "+(>$i*250) .animated.infinite.shake.dur-4 '.component-item a.comoponent-item-title'"
+          "inview>timeout(500) .component-widget": [
+            "- .fadeIn.dur-4 .component-widget",
+            "+ .fadeIn.dur-4 .component-widget",
+            "- .times-infinite.shake.dur-4 '.accordion-item a.accordion-item-title'",
+            "+(>$i*250) .times-infinite.shake.dur-4 '.accordion-item a.accordion-item-title'"
           ]
         }
       }
@@ -85,12 +89,12 @@ On elements with class 'clickstyle' on each click change to 'clickstyle-1', 'cli
     "_id": "clickstyle",
     "_events": {
         "!click .clickstyle" : [
-            "+ .clickstyle-$x[data-clickstyle='$x'] .clickstyle",
+            "+ .clickstyle-$ge[data-clickstyle='$ge'] .clickstyle",
             "- .clickstyle .clickstyle"
         ],
         "!click [data-clickstyle]" : [
-            "- .clickstyle-$x [data-clickstyle]",
-            "+ .clickstyle-$nx[data-clickstyle='$nx'] [data-clickstyle]"
+            "- .clickstyle-$lge [data-clickstyle]",
+            "+ .clickstyle-$ge[data-clickstyle='$ge'] [data-clickstyle]"
         ]
     },
     "_contentObjects": [
@@ -207,11 +211,17 @@ Description: Specifies whether to call the event once or repeatedly
     
 ###### eventName
 
-Description: Specifies the event name to be applied and occasionally some event parameters  
+Description: Specifies the event name to be applied and occasionally with some event restriction parameters  
         
 click, mouseover, mouseup, keypress, keyup etc... - name of standard jQuery events  
 
-inview, outview, scroll, interval(milliseconds) - additionally  
+inview(percentageInview), outview, scroll, interval(milliseconds), timeout(milliseconds) - additionally  
+
+Examples:  
+
+"inview('50%')>timeout(500) .className" : ... == when the .className items are at least 50% inview, apply the alterations after 500 milliseconds  
+"inview('50%')>1interval(500) .className" : ... == "inview('50%')>timeout(500) .className"  
+"!click .clickable" : ... == when click on any current or new .clickable item, apply the alterations  
   
 Chain Loop: 
 
@@ -285,22 +295,37 @@ Description: Allows intervalExpression and alterationSelector to use a few conte
 
 $i = item order index  
 $ni = natural item index  
-$x = fired count  
-$lx = last fired count (fired count - 1)  
-$nx = next fired count (fired count + 1)  
-$t = item top window offset  
-$r = item right window offset  
-$b = item bottom window offset  
+$e = event fired count  
+$le = last event fired count (fired count - 1)  
+$ne = next event fired count (fired count + 1)  
+$x = action fired count  
+$lx = last action fired count (fired count - 1)  
+$nx = next action fired count (fired count + 1)  
+$ge = event name fired count  
+$lge = last event name fired count (fired count - 1)  
+$nge = next event name fired count (fired count + 1)  
+$gs = event selector fired count  
+$lgs = last event selector fired count (fired count - 1)  
+$ngs = next event selector fired count (fired count + 1)  
+$t = item top window offset
+$r = item right window offset (from item right)  
+$b = item bottom window offset (from item bottom)  
 $l = item left window offset  
 $t% = item top window offset percentage 0-100  
-$r% = item right window offset percentage 0-100  
-$b% = item bottom window offset percentage 0-100  
+$r% = item right window offset percentage 0-100 (from item right)  
+$b% = item bottom window offset percentage 0-100 (from item bottom)  
 $l% = item left window offset percentage 0-100  
-$t%d = item top window offset percentage decimal .0-1  
-$r%d = item right window offset percentage decimal .0-1  
-$b%d = item bottom window offset percentage decimal .0-1  
-$l%d = item left window offset percentage decimal .0-1  
+$t%d = item top window offset percentage decimal 0-1  
+$r%d = item right window offset percentage decimal 0-1 (from item right)  
+$b%d = item bottom window offset percentage decimal 0-1 (from item bottom)  
+$l%d = item left window offset percentage decimal 0-1  
+$iv% = inview percentage 0-100 (how much of the object is shown against the maximum possible)  
+$iv%d = inview percentage decimal 0-1 (how much of the object is shown against the maximum possible)  
 
+$e = is count for fires on single event line  
+$x = is count for fires on single event line actions  
+$ge = is count for fires on multiple event lines with the same event definition  
+$gs = is count for fires on multiple event lines with the same selector definition  
 
 ###External Libraries
   
