@@ -304,6 +304,8 @@ define(function(require) {
 				return string;
 			},
 			expandContext: function(string, ge, gs, e, x, ni, i, onScreen) {
+				string = string.replace(/\$iv%d/g, onScreen.inviewP/100);
+				string = string.replace(/\$iv%/g, onScreen.inviewP);
 				string = string.replace(/\$e/g, e);
 				string = string.replace(/\$le/g, e-1);
 				string = string.replace(/\$ne/g, e+1);
@@ -330,8 +332,6 @@ define(function(require) {
 				string = string.replace(/\$r/g, onScreen.right);
 				string = string.replace(/\$b/g, onScreen.bottom);
 				string = string.replace(/\$l/g, onScreen.left);
-				string = string.replace(/\$iv%/g, onScreen.inviewP);
-				string = string.replace(/\$iv%d/g, onScreen.inviewP/100);
 				return string;
 			}
 		},
@@ -359,8 +359,9 @@ define(function(require) {
 
 				//inview
 				var inviewH = null;
-				if (width > wWidth) width = wWidth;
-				if (left < 0) { //offscreen left
+				if (left+width > 0 && right < 0) {
+					inviewH = width;
+				} else if (left < 0) { //offscreen left
 					inviewH = (width + left);
 				} else if (left + width > wWidth) { //offscreen right
 					inviewH = (wWidth - left);
@@ -369,8 +370,9 @@ define(function(require) {
 				}
 
 				var inviewV = null;
-				if (height > wHeight) height = wHeight;
-				if (top < 0) { //offscreen top
+				if (top+height > 0 && bottom < 0) {
+					inviewV = height;
+				} else if (top < 0) { //offscreen top
 					inviewV = (height + top);
 				} else if (top + height > wHeight) { //offscreen bottom
 					inviewV = (wHeight - top);
@@ -380,7 +382,6 @@ define(function(require) {
 
 				var area = height * width;
 				var inviewArea = inviewV * inviewH;
-
 				var inviewP = Math.round((100 / area) * inviewArea);
 
 
