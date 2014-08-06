@@ -105,6 +105,65 @@ On elements with class 'clickstyle' on each click change to 'clickstyle-1', 'cli
 }
 ```
   
+###Example - Title Zoom In
+
+When titles come into view by at least 50%, paly a 5 second zoomin animate once
+```
+{
+    "_id": "title-in",
+    "_isEnabled" : true,
+    "_events": {
+        "!inview(50) h6" : [
+            "- .times-1.zoomInLeft.dur-5",
+            "+ .times-1.zoomInLeft.dur-5"
+        ],
+        "!outview h6" :[
+            "- .times-1.zoomInLeft.dur-5"
+        ],
+        "!inview(50) h5" : [
+            "- .times-1.zoomInLeft.dur-5",
+            "+ .times-1.zoomInLeft.dur-5"
+        ],
+        "!outview h5" :[
+            "- .times-1.zoomInLeft.dur-5"
+        ],
+        "!inview(50) h4" : [
+            "- .times-1.zoomInLeft.dur-5",
+            "+ .times-1.zoomInLeft.dur-5"
+        ],
+        "!outview h4" :[
+            "- .times-1.zoomInLeft.dur-5"
+        ],
+        "!inview(50) h3" : [
+            "- .times-1.zoomInLeft.dur-5",
+            "+ .times-1.zoomInLeft.dur-5"
+        ],
+        "!outview h3" :[
+            "- .times-1.zoomInLeft.dur-5"
+        ],
+        "!inview(50) h2" : [
+            "- .times-1.zoomInLeft.dur-5",
+            "+ .times-1.zoomInLeft.dur-5"
+        ],
+        "!outview h2" :[
+            "- .times-1.zoomInLeft.dur-5"
+        ],
+        "!inview(50) h1" : [
+            "- .times-1.zoomInLeft.dur-5",
+            "+ .times-1.zoomInLeft.dur-5"
+        ],
+        "!outview h1" :[
+            "- .times-1.zoomInLeft.dur-5"
+        ]
+    },
+    "_contentObjects": [
+        {
+            "_type": "page"
+        }
+    ]
+}
+```
+  
   
 ###Included CSS3 Animation Classes (from https://github.com/daneden/animate.css)
   
