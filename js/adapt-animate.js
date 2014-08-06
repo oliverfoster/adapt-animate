@@ -254,7 +254,7 @@ define(function(require) {
 						if (actionOn.on !== undefined) {
 							elements = eventsOn.parent.find(actionOn.on);
 						} else {
-							elements = target; //eventsOn.children
+							elements = (target || eventsOn.children); //eventsOn.children
 						}
 						actionOn.count++;
 						var from = undefined;
