@@ -56,6 +56,7 @@ define(function(require) {
 				}
 
 				_.each(config._animations, function(item) {
+					if (item._isEnabled === false) return;
 					if (item["_"+elementType] === undefined) return;
 					_.each(item["_"+elementType], function(element) {
 						var answer = _.findWhere([modelJSON], element);
@@ -149,60 +150,70 @@ define(function(require) {
 					}, eventObj.arguments ] );
 					break;
 				case "inview":
-					function inviewCallback(event, isInView, visiblePartX, visiblePartY) {
-						var onScreen = animate.element.getOnScreen($(event.currentTarget));
-						if (!isInView && mode == "one" && eventObj.inview) {
+					function inviewCallback(event, onScreen) {
+						var $target = $(event.currentTarget);
+						
+						var isInView = true;
+						if (onScreen.inviewP <= 0) isInView = false;
+
+						var inview = $target.attr("onscreen");
+						
+						if (!isInView && mode == "one" && inview=="onscreen") {
+							$target.attr("inview","");
 							eventObj.appliedCount--;
 							delete eventObj.inview;
 							if (eventObj.appliedCount === 0) {
 								eventsOn.index--;
-								eventsOn.children["off"]("inview", inviewCallback);
+								eventsOn.children["off"]("onscreen", inviewCallback);
 							}
 							return;
 						}
 						if (!isInView) {
-							delete eventObj.inview;
+							$target.attr("onscreen","");
 							return;
 						}
-						if (isInView && eventObj.inview) return;
+						if (isInView && inview) return;
 
 						if (eventObj.arguments !== undefined && eventObj.arguments[0] !== undefined) {
 							if (onScreen.inviewP < parseInt(eventObj.arguments[0])) return;
 						}
 
-						eventObj.inview = true;
+						$target.attr("onscreen","onscreen");
 						if (isInView) {
-							callback();
+							callback($target);
 						}
 					}
 					if (live) {
-						if (eventObj.appliedCount === 0) eventsOn.parent["on"]("inview", eventsOn.on, inviewCallback);
+						if (eventObj.appliedCount === 0) eventsOn.parent["on"]("onscreen", eventsOn.on, inviewCallback);
 					} else {
 						if (eventObj.appliedCount === 0) {
-							eventsOn.children["on"]("inview", inviewCallback);
+							eventsOn.children["on"]("onscreen", inviewCallback);
 						}
 					};
 					eventObj.appliedCount++;
 					break;
 				case "outview":
-					function outviewCallback(event, isInView, visiblePartX, visiblePartY) {
+					function outviewCallback(event, onScreen) {
 						var onScreen = animate.element.getOnScreen($(event.currentTarget));
+						var isInView = true;
+						if (onScreen.inviewP <= 0) isInView = false;
 
 						if (!isInView) {
-							callback();
+							var $target = $(event.currentTarget);
+							callback($target);
 						}
 						if (!isInView && mode == "one") {
 							eventObj.appliedCount--;
 							if (eventObj.appliedCount === 0) {
 								eventsOn.index--;
-								eventsOn.children["off"]("inview", outviewCallback);
+								eventsOn.children["off"]("onscreen", outviewCallback);
 							}
 						}
 					}
 					if (live) {
-						if (eventObj.appliedCount === 0) eventsOn.parent["on"]("inview", eventsOn.on, outviewCallback);
+						if (eventObj.appliedCount === 0) eventsOn.parent["on"]("onscreen", eventsOn.on, outviewCallback);
 					} else {
-						if (eventObj.appliedCount === 0) eventsOn.children["on"]("inview", outviewCallback);
+						if (eventObj.appliedCount === 0) eventsOn.children["on"]("onscreen", outviewCallback);
 					}
 					eventObj.appliedCount++;
 					break;
@@ -226,7 +237,7 @@ define(function(require) {
 					break;
 				}
 			},
-			run: function(eventsOn) {
+			run: function(eventsOn, target) {
 				var back = false;
 				if (eventsOn.index < eventsOn.events.length - 1) {
 					back = (eventsOn.events[eventsOn.index + 1].mode == "<");
@@ -239,7 +250,12 @@ define(function(require) {
 					eventsOn.groupByOn.count++;
 					_.each(eventsOn.actionsOn, function(actionOn) {
 						eventsOn.children = eventsOn.parent.find(eventsOn.on);
-						var elements = eventsOn.parent.find(actionOn.on);
+						var elements = undefined;
+						if (actionOn.on !== undefined) {
+							elements = eventsOn.parent.find(actionOn.on);
+						} else {
+							elements = target; //eventsOn.children
+						}
 						actionOn.count++;
 						var from = undefined;
 						var to = undefined;
@@ -359,7 +375,7 @@ define(function(require) {
 
 				//inview
 				var inviewH = null;
-				if (left+width > 0 && right < 0) {
+				if (left+width > 0 && right < 0 && left < 0) {
 					inviewH = width;
 				} else if (left < 0) { //offscreen left
 					inviewH = (width + left);
@@ -370,7 +386,7 @@ define(function(require) {
 				}
 
 				var inviewV = null;
-				if (top+height > 0 && bottom < 0) {
+				if (top+height > 0 && bottom < 0 && top < 0) {
 					inviewV = height;
 				} else if (top < 0) { //offscreen top
 					inviewV = (height + top);
@@ -384,8 +400,9 @@ define(function(require) {
 				var inviewArea = inviewV * inviewH;
 				var inviewP = Math.round((100 / area) * inviewArea);
 
+				var uniq = ""+top+left+bottom+right+height+width+wHeight+wWidth;
 
-				return { top: top, left: left, bottom: bottom, right: right, topP: topP, leftP:leftP, bottomP: bottomP, rightP: rightP, inviewP:inviewP };
+				return { top: top, left: left, bottom: bottom, right: right, topP: topP, leftP:leftP, bottomP: bottomP, rightP: rightP, inviewP:inviewP, uniq:uniq };
 			}
 		},
 		event: {
@@ -543,5 +560,51 @@ define(function(require) {
 		animate.go(view, "components");
 	});
 
+
+
+
+	
+	function onscreen () {
+		var objs = _.filter($.cache, function(item) {
+			if (item.events !== undefined && item.events.onscreen !== undefined) return true;
+		});
+		if (objs.length === 0) {
+			//nothing to onscreen
+			clearInterval(onscreen.interval);
+			onscreen.timeslice = 1000;
+			onscreen.interval = setInterval(onscreen, onscreen.timeslice);
+		} else {
+			//something to onscreen
+			clearInterval(onscreen.interval);
+			onscreen.timeslice = 500;
+			onscreen.interval = setInterval(onscreen, onscreen.timeslice);
+		}
+
+		_.each(objs, function(obj) {
+			_.each(obj.events.onscreen, function(listener) {
+				var items = undefined;
+				if (listener.selector === undefined) {
+					items = $(obj.handle.elem);
+				} else {
+					items = $(obj.handle.elem).find(listener.selector);
+				}
+				_.each(items, function(item) {
+					$item = $(item);
+					var onscreen = animate.element.getOnScreen($item);
+					if (item.onscreen !== undefined && item.onscreen === onscreen.uniq) return;
+					item.onscreen = onscreen.uniq;
+					if (onscreen.inviewP > 0) {
+						$item.trigger("onscreen", onscreen);
+					} else {
+						
+						$item.trigger("onscreen", onscreen);
+					}
+				});
+			});
+		});
+
+	}
+	onscreen.timeslice = 333;
+	onscreen.interval = setInterval(onscreen, onscreen.timeslice);
 
 })
