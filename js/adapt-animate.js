@@ -8,8 +8,8 @@ define(function(require) {
 
 	var Adapt = require('coreJS/adapt');
 	var Backbone = require('backbone');
-	var Backbone = require('extensions/adapt-animate/js/emmet.min');
-	var elements = [ "contentObjects", "articles", "blocks", "components" ];
+	var Emmet = require('extensions/adapt-animate/js/emmet.min');
+	var elements = [ "global", "contentObjects", "articles", "blocks", "components" ];
 	var config = undefined;
 
 	var attrs = function(object) {
@@ -53,20 +53,26 @@ define(function(require) {
 						redo[item._id] = item;
 					});
 					modelAnimate._animations = redo;
+				} else {
+					modelAnimate._animations = {};
 				}
 
 				_.each(config._animations, function(item) {
 					if (item._isEnabled === false) return;
 					if (item["_"+elementType] === undefined) return;
-					_.each(item["_"+elementType], function(element) {
-						var answer = _.findWhere([modelJSON], element);
-						if (answer !== undefined) {
-							if (modelAnimate._animations === undefined) modelAnimate._animations = {};
-							if (modelAnimate._animations[item._id] !== undefined) return;
-							modelAnimate._animations[item._id] = item;
-							return;
-						}
-					});
+					if (item["_"+elementType] === true) {
+						modelAnimate._animations[item._id] = item;
+					} else {
+						_.each(item["_"+elementType], function(element) {
+							var answer = _.findWhere([modelJSON], element);
+							if (answer !== undefined) {
+								if (modelAnimate._animations === undefined) modelAnimate._animations = {};
+								if (modelAnimate._animations[item._id] !== undefined) return;
+								modelAnimate._animations[item._id] = item;
+								return;
+							}
+						});
+					}
 				});
 
 				modelAnimate._merged = true;
@@ -540,12 +546,22 @@ define(function(require) {
 	Adapt.on("app:dataReady", function() {
 		if (Adapt.course.get("_animate") === undefined) return;
 		var id = 1;
-		var animate = Adapt.course.get("_animate");
-		_.each(animate._animations, function(item) {
+		var _animate = Adapt.course.get("_animate");
+		_.each(_animate._animations, function(item) {
 			if (item._id == undefined) item._id = "glan-" + (id++);
 		});
-		config = animate;
+		config = _animate;
+
+		var view = {};
+		view.$el = $("body");
+		view.model = new Backbone.Model({
+			"_animate": {
+				"_isEnabled": true
+			}
+		});
+		animate.go(view, "global");
 	});
+
 
 	Adapt.on("pageView:postRender", function(view) {
 		animate.go(view, "contentObjects");
