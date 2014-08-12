@@ -97,11 +97,7 @@ On elements with class 'clickstyle' on each click change to 'clickstyle-1', 'cli
             "+ .clickstyle-$ge[data-clickstyle='$ge'] [data-clickstyle]"
         ]
     },
-    "_contentObjects": [
-        {
-            "_type": "page"
-        }
-    ]
+    "_global": true
 }
 ```
   
