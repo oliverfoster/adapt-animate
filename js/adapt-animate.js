@@ -33,6 +33,7 @@ define(function(require) {
 		view: undefined,
 		go: function(view, elementType) {
 			var model = view.model;
+			if (config === undefined) return;
 			if (config.length === 0) return;
 			if (model.get("_animate") === undefined || model.get("_animate")._isEnabled === false) return;
 			
