@@ -6,9 +6,7 @@
 
 define(function(require) {
 
-	var Emmet = require('extensions/adapt-animate/js/emmet.min');
 	var OnScreen = require('extensions/adapt-animate/js/onscreen');
-	var elements = [ "global", "contentObjects", "articles", "blocks", "components" ];
 
 	var Adapt = require('coreJS/adapt');
 	var Backbone = require('backbone');
@@ -443,7 +441,7 @@ define(function(require) {
 								break;
 							}
 						}
-						
+
 					});
 					if (back) {
 						//IF BACK SPACIFIED MOVE BACK GIVEN COUNT

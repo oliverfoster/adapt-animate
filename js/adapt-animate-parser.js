@@ -7,7 +7,6 @@
 define(function(require) {
 
 	var Emmet = require('extensions/adapt-animate/js/emmet.min');
-	var OnScreen = require('extensions/adapt-animate/js/onscreen');
 
 	var DOMAttrs = function(object) {
         //GET DOM ELEMENT ATTRIBUTES AS {KEY: VALUE}
