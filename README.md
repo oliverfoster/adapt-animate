@@ -107,7 +107,6 @@ When titles come into view by at least 50%, paly a 5 second zoomin animate once
 ```
 {
     "_id": "title-in",
-    "_isEnabled" : true,
     "_events": {
         "!inview(50) h6" : [
             "- .times-1.zoomInLeft.dur-5",
@@ -249,7 +248,7 @@ Note: You may use your own styles!
     
 ####1 . events  
 
-Description: Specifies the events to be applied to the toSelector elements  
+Description: Specifies the events to be applied to the onSelector elements  
 
 [mode]eventName[>[mode]eventName][>[mode]eventName]....  
 
@@ -259,7 +258,7 @@ At the end of the event chain it is possible to loop round (see eventName for de
     
 ###### mode  
 
-Description: Specifies whether to call the event once or repeatedly  
+Description: Specifies whether to call the event once, repeatedly or on every onSelector element
 
      
 1 = use $.one instead of $on to attach event  
@@ -267,7 +266,7 @@ Description: Specifies whether to call the event once or repeatedly
     
 ###### eventName
 
-Description: Specifies the event name to be applied and occasionally with some event restriction parameters  
+Description: Specifies the event name to be applied (and occasionally with some event restriction parameters)  
         
 click, mouseover, mouseup, keypress, keyup etc... - name of standard jQuery events  
 
@@ -293,7 +292,7 @@ Will activate on first inview after 500 milliseconds then reapply 1inview
         
 #### 2. onSelector/toSelector 
 
-Description: Selects elements to attach event on or to apply alterations to  
+Description: Selects elements to attach events on or to apply alterations to  
 
 [']jQuerySelector[']  
 
@@ -315,12 +314,12 @@ Description: Specifies the actions to be taken on the event call
 
 Description: Specifies whether to add or remove the alterations  
 
-  \+ = add alterationSelector to toSelector  
-  \- = remove alterationSelector from toSelector  
+  \+ = add alterationSelector to toSelector elements  
+  \- = remove alterationSelector from toSelector elements  
   
 ###### order
 
-Description: Specifies the order at which the alterations are to be made on the elements from toSelector, top-to-bottom or bottom-to-top  
+Description: Specifies the order in which the alterations are to be made, top-to-bottom or bottom-to-top  
 
   \> = add interval descending  
   \< = add interval ascending  
