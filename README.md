@@ -1,12 +1,42 @@
 adapt-animate
 =============
 
-On events at elements(onSelector), add or remove classes/attributes/content(alterationSelector) to elements(toSelector) on selected pages/articles/blocks/components.
+On selected body/pages/articles/blocks/components, when events fire at elements(onSelector), add or remove(action), classes/attributes/content(alterationSelector) to elements(toSelector).
+```
+  "_global": true
+  "_contentObjects": [
+    {
+      "_id": "co-1"
+    }
+  ],
+  "_articles": [
+    {
+      "_id": "a-1"
+    }
+  ],
+  "_blocks": [
+    {
+      "_id": "b-1"
+    }
+  ],
+  "_components": [
+    {
+      "_id": "c-1"
+    }
+  ],
+  "_events": [
+    "events onSelector": [ 
+      "[action] alterationSelector [toSelector]"  
+    ]
+  ]
+```
+
 
 ###Usage
   
 To go in: 
   
+  course.json  
   contentObjects.json  
   articles.json  
   blocks.json  
@@ -83,6 +113,8 @@ To go in course.json
 ###Example - ClickStyle
   
 On elements with class 'clickstyle' on each click change to 'clickstyle-1', 'clickstyle-2' etc...  
+
+To go in course.json  
   
 ```
  {
@@ -103,7 +135,9 @@ On elements with class 'clickstyle' on each click change to 'clickstyle-1', 'cli
   
 ###Example - Title Zoom In
 
-When titles come into view by at least 50%, paly a 5 second zoomin animate once
+When titles come into view by at least 50%, paly a 5 second zoomin animate once  
+
+To go in course.json  
 ```
 {
     "_id": "title-in",
@@ -242,9 +276,11 @@ Note: You may use your own styles!
 
 ```  
 
-### Formation
-  
+### OnEventAction Formation
+
+```
 "events onSelector": "[action] alterationSelector [toSelector]"  
+```
     
 ####1 . events  
 
