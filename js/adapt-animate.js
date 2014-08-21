@@ -13,9 +13,9 @@ define(function(require) {
 	var parser = require('extensions/adapt-animate/js/adapt-animate-parser');
 
 	var ie = undefined;
-	//if ($("html").hasClass("ie9") || $("html").hasClass("ie8")) {
+	if ( $("html").hasClass("ie9") ) {
 		ie = require('extensions/adapt-animate/js/adapt-animate-ie9');
-	//}
+	}
 
 	var globalScope = undefined;
 
