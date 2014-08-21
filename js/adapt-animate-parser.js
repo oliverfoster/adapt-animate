@@ -15,6 +15,7 @@ define(function(require) {
             var atts = object.attributes;
             for (var i in atts) {
                 var p = atts[i];
+                if (p === null) continue;
                 if (typeof p.value !== 'undefined') a[p.nodeName] = p.value;
             }
         }

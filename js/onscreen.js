@@ -78,8 +78,8 @@
 				_.each(items, function(item) {
 					$item = $(item);
 					var onscreen = getOnScreen($item);
-					if (item.onscreen !== undefined && item.onscreen === onscreen.uniq) return;
-					item.onscreen = onscreen.uniq;
+					if (item._onscreen !== undefined && item._onscreen === onscreen.uniq) return;
+					item._onscreen = onscreen.uniq;
 					if (onscreen.inviewP > 0) {
 						$item.trigger("onscreen", onscreen);
 					} else {

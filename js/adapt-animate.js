@@ -12,6 +12,11 @@ define(function(require) {
 	var Backbone = require('backbone');
 	var parser = require('extensions/adapt-animate/js/adapt-animate-parser');
 
+	var ie = undefined;
+	//if ($("html").hasClass("ie9") || $("html").hasClass("ie8")) {
+		ie = require('extensions/adapt-animate/js/adapt-animate-ie9');
+	//}
+
 	var globalScope = undefined;
 
 	var animate = {
@@ -212,23 +217,23 @@ define(function(require) {
 
 					if (mode == "one") {
 						//IF 1interval USE TIMEOUT INSTEAD
-						setTimeout.apply(window, [ function() {
+						setTimeout(function() {
 							onEvent();
 							//PUSH EVENTQUEUE BACK ONE INDEX
 							eventsOn.index--;
-						}, eventObj.arguments ] );
+						}, eventObj.arguments[0] );
 						break;
 					}
-					setInterval.apply(window, [ onEvent, eventObj.arguments ] );
+					setInterval(onEvent, eventObj.arguments[0] );
 					break;
 
 				case "timeout":
 
-					setTimeout.apply(window, [ function() {
+					setTimeout(function() {
 						onEvent();
 						//PUSH EVENTQUEUE BACK ONE INDEX
 						eventsOn.index--;
-					}, eventObj.arguments ] );
+					}, eventObj.arguments[0] );
 					break;
 
 				case "inview": 
@@ -382,8 +387,10 @@ define(function(require) {
 						var elements = undefined;
 						if (actionOn.on !== undefined) {
 							elements = eventsOn.parent.find(actionOn.on);
+							selector = actionOn.on;
 						} else {
 							//IF NO ACTIONON SECTION ON SPECIFIED, USE CURRENT EVENT TARGET OR EVENTS ON ELEMENTS
+							selector = eventsOn.on;
 							elements = (target || eventsOn.children);
 						}
 
@@ -396,6 +403,7 @@ define(function(require) {
 							//CHOOSE DIRECTION OF APPLICATION, FORWARD/BACKWARD
 							var index = (actionOn.action.direction == "backward" ? (elements.length - 1) - i : i);
 							var $element = $(elements[index]);
+							$element.selector = selector;
 
 							var onScreen = $element.onscreen();
 
@@ -419,6 +427,7 @@ define(function(require) {
 										}
 									});
 									$element.html(alterations.content);
+									if (ie !== undefined) ie.element($element);
 								}, window, $element, alterations);
 								
 								if (interval > 0) setTimeout( tailor, interval);
