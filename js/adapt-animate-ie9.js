@@ -223,7 +223,7 @@ define(function(require) {
 			//last item
 			if (this.options.iterations === "infinite") {
 				this.startFrameTimers();
-			} else if (this.options.iterations <= this.times) {
+			} else if ( this.times < this.options.iterations) {
 				this.startFrameTimers();
 			}
 		}
