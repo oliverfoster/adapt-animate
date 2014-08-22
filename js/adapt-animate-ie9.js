@@ -114,7 +114,8 @@ define(function(require) {
 					name: elementCSS['animation-name']
 				};
 
-				var keyFrames = _.findWhere(keyFramesRules, { name: options.name } );
+				var keyFrames = _.where(keyFramesRules, { name: options.name } );
+				keyFrames = keyFrames.pop();
 
 				keyFrames = keyFramesDeclarationsFilter(keyFrames);
 
@@ -291,11 +292,19 @@ define(function(require) {
 							props[aValues[0]]= [];
 							props[aValues[0]].parent = dec.property;
 						}
-						props[aValues[0]].push({ 
-							interval: frame.interval,
-							percent: parseInt(frame.keyText), 
-							values: aValues[1].split(",")
-						});
+						if (aValues.length > 1) {
+							props[aValues[0]].push({ 
+								interval: frame.interval,
+								percent: parseInt(frame.keyText), 
+								values: aValues[1].split(",")
+							});
+						} else {
+							props[aValues[0]].push({ 
+								interval: frame.interval,
+								percent: parseInt(frame.keyText), 
+								values: [dec.valueText]
+							});
+						}
 					});
 				} else {
 					if (props[dec.property] === undefined) {
