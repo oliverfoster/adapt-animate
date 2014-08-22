@@ -5,6 +5,7 @@
 */
 
 define(function(require) {
+	if (!$("html").hasClass("ie9") ) return;
 	var supported = [
 		"border-radius",
 		"box-shadow",
@@ -61,7 +62,7 @@ define(function(require) {
 
 	require('extensions/adapt-animate/js/cssParser');
 
-	var href = $('link[rel="stylesheet"][type="text/css"').attr("href");
+	var href = $('link[rel="stylesheet"][type="text/css"]').attr("href");
 	var css = undefined;
 	$.ajax({ 
 		url:href, 
@@ -477,14 +478,6 @@ define(function(require) {
 	    }
 	    return -1;
 	  };
-	}
-
-	if ( $("html").hasClass("ie8") ) {
-		//filter inheritance
-		var style = $("<style>");
-		$("head").append(style);
-		style[0].innerText = ("<style>html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video, article, aside, figure, footer, header, hgroup, nav, section, object, a, hr, input, select, textarea, button { filter: inherit; }</style>");
-		
 	}
 
 	return ie;
