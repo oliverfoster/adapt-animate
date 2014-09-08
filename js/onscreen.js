@@ -67,34 +67,36 @@
 			onscreen.interval = setInterval(onscreen, onscreen.timeslice);
 		}
 
-		_.each(objs, function(obj) {
-			_.each(obj.events.onscreen, function(listener) {
+		for (var o = 0; o < objs.length; o++) {
+			var obj = objs[o];
+			if (obj.events === undefined || obj.events.onscreen === undefined) continue;
+			for (var ev = 0; ev < obj.events.onscreen.length; ev++) {
+				var listener = obj.events.onscreen[ev];
 				var items = undefined;
 				if (listener.selector === undefined) {
 					items = $(obj.handle.elem);
 				} else {
 					items = $(obj.handle.elem).find(listener.selector);
 				}
-				_.each(items, function(item) {
+				for (var i = 0; i < items.length; i++) {
+					var item = items[i];
 					$item = $(item);
-					var onscreen = getOnScreen($item);
-					if (item._onscreen !== undefined && item._onscreen === onscreen.uniq) return;
-					item._onscreen = onscreen.uniq;
-					if (onscreen.inviewP > 0) {
-						$item.trigger("onscreen", onscreen);
+					var onscreenVal = getOnScreen($item);
+					if (item._onscreen !== undefined && item._onscreen === onscreenVal.uniq) continue;
+					item._onscreen = onscreenVal.uniq;
+					if (onscreenVal.inviewP > 0) {
+						$item.trigger("onscreen", onscreenVal);
 					} else {
-						$item.trigger("onscreen", onscreen);
+						$item.trigger("onscreen", onscreenVal);
 					}
-				});
-			});
-		});
+				}
+			}
+		}
 
 	}
 	onscreen.timeslice = 333;
 	onscreen.interval = setInterval(onscreen, onscreen.timeslice);
 	$.fn.onscreen = function() {
-		for (var i = 0; i < 1; i++ ) {
-			return getOnScreen($(this[i]));
-		}
+		return getOnScreen($(this[0]));
 	};
 })();
