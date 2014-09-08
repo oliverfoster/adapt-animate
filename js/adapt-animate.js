@@ -217,19 +217,25 @@ define(function(require) {
 
 					if (mode == "one") {
 						//IF 1interval USE TIMEOUT INSTEAD
-						setTimeout(function() {
+						if (eventObj.timeoutHandle !== null) break;
+						eventObj.timeoutHandle = setTimeout(function() {
+							eventObj.timeoutHandle = null;
 							onEvent();
 							//PUSH EVENTQUEUE BACK ONE INDEX
 							eventsOn.index--;
 						}, eventObj.arguments[0] );
 						break;
 					}
-					setInterval(onEvent, eventObj.arguments[0] );
+					if (eventObj.intervalHandle !== null) break;
+					eventObj.intervalHandle = setInterval(function() {
+						onEvent();
+					}, eventObj.arguments[0] );
 					break;
 
 				case "timeout":
-
-					setTimeout(function() {
+					if (eventObj.timeoutHandle !== null) break;
+					eventObj.timeoutHandle = setTimeout(function() {
+						eventObj.timeoutHandle = null;
 						onEvent();
 						//PUSH EVENTQUEUE BACK ONE INDEX
 						eventsOn.index--;
