@@ -342,19 +342,23 @@ define(function(require) {
 
 					//APPLY EVENT IN CHOSEN FORMAT
 					if (hasSelector) {
-						if (eventObj.appliedCount === 0) eventsOn.parent[mode](eventObj.name, eventsOn.on, onEvent );
+						if (eventObj.appliedCount === 0) eventsOn.parent[mode](eventObj.name, eventsOn.on, function(event) { 
+								onEvent($(event.currentTarget));
+							});
 					} else {
 
 						switch(mode) {
 						case "one":
-							if (eventObj.appliedCount === 0) eventsOn.children[mode](eventObj.name, function() {
-								onEvent();
+							if (eventObj.appliedCount === 0) eventsOn.children[mode](eventObj.name, function(event) {
+								onEvent($(event.currentTarget));
 								//PUSH EVENTQUEUE BACK ONE INDEX
 								eventsOn.index--;
 							} );
 							break;
 						case "on":
-							if (eventObj.appliedCount === 0) eventsOn.children[mode](eventObj.name, onEvent );
+							if (eventObj.appliedCount === 0) eventsOn.children[mode](eventObj.name, function(event) { 
+								onEvent($(event.currentTarget));
+							});
 							break;
 						}
 						
@@ -388,10 +392,11 @@ define(function(require) {
 					//APPLY ACTION ALTERATIONS
 					_.each(eventsOn.actionsOn, function(actionOn) {
 
+
 						//SELECT ELEMENTS TO ALTER
 						eventsOn.children = eventsOn.parent.find(eventsOn.on);
 						var elements = undefined;
-						if (actionOn.on !== undefined) {
+						if (actionOn.on !== undefined && actionOn.action.type != "event") {
 							elements = eventsOn.parent.find(actionOn.on);
 							selector = actionOn.on;
 						} else {
@@ -413,47 +418,61 @@ define(function(require) {
 
 							var onScreen = $element.onscreen();
 
-							//PARSE ALTERATION EXPRESSION AND COLLECT ALTERATIONS
-							var alterations = parser.context.alterations(index, i, eventsOn, actionOn, onScreen);
-							
-							//PARSE INTERVAL EXPRESSION
-							var interval = undefined;
-							if (actionOn.action.interval === undefined) interval = 0;
-							else interval = parser.context.interval(index, i, eventsOn, actionOn, onScreen);
-							
-							//APPLY ALTERATIONS WITH/WITHOUT INTERVAL BETWEEN 
 							switch (actionOn.action.type) {
-							case "add":
-								var tailor =  _.bind(function($element, alterations) {
-									_.each(alterations.attributes, function(value, key) {
-										if (key == "class") {
-											$element.addClass(value);
-										} else {
-											$element.attr(key, value);
-										}
-									});
-									$element.html(alterations.content);
-									if (ie !== undefined) ie.element($element);
-								}, window, $element, alterations);
-								
-								if (interval > 0) setTimeout( tailor, interval);
-								else tailor();
+							case "event":
+
+								//TRIGGER GLOBAL EVENT
+								if (actionOn.on !== undefined) {
+									Adapt.trigger(actionOn.alterations, actionOn.on, elements, i, actionOn);
+								} else {
+									Adapt.trigger(actionOn.alterations, elements, i, actionOn);
+								}
+
 								break;
-							case "remove":
-								var tailor = _.bind(function($element, alterations) {
-									_.each(alterations.attributes, function(value, key) {
-										if (key == "class") {
-											$element.removeClass(value);
-										} else {
-											$element.attr(key, "");
-										}
-									});
-									$element.html(alterations.content);
-								}, window, $element, alterations);
+							default:
+
+								//PARSE ALTERATION EXPRESSION AND COLLECT ALTERATIONS
+								var alterations = parser.context.alterations(index, i, eventsOn, actionOn, onScreen);
 								
-								if (interval > 0) setTimeout( tailor, interval);
-								else tailor();
-								break;
+								//PARSE INTERVAL EXPRESSION
+								var interval = undefined;
+								if (actionOn.action.interval === undefined) interval = 0;
+								else interval = parser.context.interval(index, i, eventsOn, actionOn, onScreen);
+								
+								//APPLY ALTERATIONS WITH/WITHOUT INTERVAL BETWEEN 
+								switch (actionOn.action.type) {
+								case "add":
+									var tailor =  _.bind(function($element, alterations) {
+										_.each(alterations.attributes, function(value, key) {
+											if (key == "class") {
+												$element.addClass(value);
+											} else {
+												$element.attr(key, value);
+											}
+										});
+										$element.html(alterations.content);
+										if (ie !== undefined) ie.element($element);
+									}, window, $element, alterations);
+									
+									if (interval > 0) setTimeout( tailor, interval);
+									else tailor();
+									break;
+								case "remove":
+									var tailor = _.bind(function($element, alterations) {
+										_.each(alterations.attributes, function(value, key) {
+											if (key == "class") {
+												$element.removeClass(value);
+											} else {
+												$element.attr(key, "");
+											}
+										});
+										$element.html(alterations.content);
+									}, window, $element, alterations);
+									
+									if (interval > 0) setTimeout( tailor, interval);
+									else tailor();
+									break;
+								}
 							}
 						}
 

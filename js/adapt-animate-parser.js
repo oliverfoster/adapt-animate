@@ -178,6 +178,9 @@ define(function(require) {
 					var direction = undefined;
 					var interval = undefined;
 					switch (action.substr(0,1)) {
+					case ":": 
+						type = "event";
+						break;
 					case "-":
 						type = "remove";
 						action = action.substr(1);
