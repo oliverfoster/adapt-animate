@@ -1,3 +1,9 @@
+/*
+* adapt-animate-ie9
+* License - http://github.com/adaptlearning/adapt_framework/LICENSE
+* Maintainers - Oliver Foster <oliver.foster@kineo.com>
+*/
+
 (function() {
 	function getOnScreen($element) {
 		var height = $element.height();
