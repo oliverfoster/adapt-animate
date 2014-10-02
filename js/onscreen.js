@@ -58,9 +58,11 @@
 		return { top: top, left: left, bottom: bottom, right: right, topP: topP, leftP:leftP, bottomP: bottomP, rightP: rightP, inviewP:inviewP, uniq:uniq };
 	}
 	function onscreen () {
-		var objs = _.filter($.cache, function(item) {
-			if (item.events !== undefined && item.events.onscreen !== undefined) return true;
-		});
+		var objs = [];
+		for (var i in $.cache) {
+			var item = $.cache[i];
+			if (item.events !== undefined && item.events.onscreen !== undefined) objs.push(item);
+		}
 		if (objs.length === 0) {
 			//nothing to onscreen
 			clearInterval(onscreen.interval);
