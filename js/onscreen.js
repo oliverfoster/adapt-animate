@@ -1,9 +1,3 @@
-/*
-* adapt-animate-ie9
-* License - http://github.com/adaptlearning/adapt_framework/LICENSE
-* Maintainers - Oliver Foster <oliver.foster@kineo.com>
-*/
-
 (function() {
 	function getOnScreen($element) {
 		var height = $element.height();
@@ -63,6 +57,9 @@
 			var item = $.cache[i];
 			if (item.events !== undefined && item.events.onscreen !== undefined) objs.push(item);
 		}
+		/*var objs = _.filter($.cache, function(item) {
+			if (item.events !== undefined && item.events.onscreen !== undefined) return true;
+		});*/
 		if (objs.length === 0) {
 			//nothing to onscreen
 			clearInterval(onscreen.interval);
@@ -71,40 +68,48 @@
 		} else {
 			//something to onscreen
 			clearInterval(onscreen.interval);
-			onscreen.timeslice = 500;
+			onscreen.timeslice = 250;
 			onscreen.interval = setInterval(onscreen, onscreen.timeslice);
 		}
 
-		for (var o = 0; o < objs.length; o++) {
-			var obj = objs[o];
+		//_.each(objs, function(obj) {
+		for (var oid = 0; oid < objs.length; oid++) {
+			var obj = objs[oid];
 			if (obj.events === undefined || obj.events.onscreen === undefined) continue;
-			for (var ev = 0; ev < obj.events.onscreen.length; ev++) {
-				var listener = obj.events.onscreen[ev];
+			//_.each(obj.events.onscreen, function(listener) {
+			for (var li = 0; li < obj.events.onscreen.length; li++) {
+				var listener = obj.events.onscreen[li];
 				var items = undefined;
 				if (listener.selector === undefined) {
 					items = $(obj.handle.elem);
 				} else {
 					items = $(obj.handle.elem).find(listener.selector);
 				}
-				for (var i = 0; i < items.length; i++) {
-					var item = items[i];
-					$item = $(item);
-					var onscreenVal = getOnScreen($item);
-					if (item._onscreen !== undefined && item._onscreen === onscreenVal.uniq) continue;
-					item._onscreen = onscreenVal.uniq;
-					if (onscreenVal.inviewP > 0) {
-						$item.trigger("onscreen", onscreenVal);
-					} else {
-						$item.trigger("onscreen", onscreenVal);
+				//_.each(items, function(item) {
+				for (var im = 0; im < items.length; im++) {
+					var item = items[im];
+					var $item = $(item);
+					var osData = getOnScreen($item);
+					if (item._onscreen !== undefined && item._onscreen === osData.uniq) continue;
+					item._onscreen = osData.uniq;
+					if (item._osData !== undefined && item._osData.inviewP < 0 && osData.inviewP < 0) {
+						continue;
 					}
+					item._osData = osData; 
+					$item.trigger("onscreen", osData);
 				}
+				//});
 			}
+			//});
 		}
+		//});
 
 	}
-	onscreen.timeslice = 333;
+	onscreen.timeslice = 250;
 	onscreen.interval = setInterval(onscreen, onscreen.timeslice);
 	$.fn.onscreen = function() {
-		return getOnScreen($(this[0]));
+		for (var i = 0; i < 1; i++ ) {
+			return getOnScreen($(this[i]));
+		}
 	};
 })();
